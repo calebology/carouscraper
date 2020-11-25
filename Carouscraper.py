@@ -3,7 +3,8 @@ import requests
 from bs4 import BeautifulSoup as bs
 import csv
 from os.path import basename
-
+import time
+import glob
 
 my_url = "https://www.carousell.sg/search/guitar?"
 
@@ -37,11 +38,7 @@ for price in price_result:
 
 '''
 
-# Iterating through the whole page and finding descriptions, prices and urls
-csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
 
-csv_writer = csv.writer(csv_file)
-csv_writer.writerow(["Description", "Price", "URL"])
 
 # Function for scraping descriptions
 def get_descs(inp):
@@ -76,6 +73,11 @@ for x in range(len(containers)):
     urls = get_urls(containers[x])
 
 
+# Creating csv file to store scraped content
+csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
+csv_writer = csv.writer(csv_file)
+csv_writer.writerow(["Description", "Price", "URL"])
+
     # # Scraping descriptions 
     # descs = containers[x].find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _30RANjWDIv"}).text
     # print(descs)
@@ -101,12 +103,36 @@ for x in range(len(containers)):
 
 # csv_file.close()
 
+# Building the while loop to compile the data with
+# while True:
+#     time.sleep(5)
+#     my_url = "https://www.carousell.sg/search/guitar?"
+#     resp = requests.get(my_url)
+#     # HTML Parsing
+#     my_soup = bs(resp.content, "html.parser")
+#     # Grabbing each listing
+#     containers = my_soup.findAll("div", {"class": "An6bc8d5sQ _9IlksbU0Mo _2t71A7rHgH"})
+
+#     if glob.glob("*.csv"):
+#         # Write onto the existing CSV file
+
+#     else:
+#         # Create the csv
+#         # csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
+#         # csv_writer = csv.writer(csv_file)
+#         # csv_writer.writerow(["Description", "Price", "URL"])
+        
+    
+
+
 '''
 ## To Do List
 
 # Scrape the pictures (done)
 
-# Add in time function
+# Add in time function (done)
+
+# Try to use an excel writer instead of csv writer !!!
 
 # Find some way for the info to be compiled onto the csv iteratively (while loop)?
 ## Add in a condition, if there's no file in directory, create one. If there is, compile on top of it.
@@ -117,4 +143,5 @@ for x in range(len(containers)):
 # Integrate a sorting algorithm; check whether it's actually a guitar
     # Image processing ML? lol....
 
+# Conclude the project after I figure out how to present the images together with the other content 
 '''
