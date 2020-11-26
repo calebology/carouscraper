@@ -5,9 +5,10 @@ import csv
 from os.path import basename
 import time
 import glob
+import xlsxwriter
+
 
 my_url = "https://www.carousell.sg/search/guitar?"
-
 resp = requests.get(my_url)
 
 # HTML Parsing
@@ -63,20 +64,39 @@ def get_imgs(inp):
     for img in img_links:
         image_src = img["src"]
         with open(basename(image_src), "wb") as f:
-            pic = f.write(requests.get(image_src).content)
+            f.write(requests.get(image_src).content)
+    return print(f)
 
+# Creating Excel File
+workbook = xlsxwriter.Workbook("carousell_scrape.xlsx")
+worksheet = workbook.add_worksheet()
+# Writing headers
+worksheet.write("A1", "Description")
+worksheet.write("B1", "Price")
+worksheet.write("C1", "URL")
+worksheet.write("D1", "Image")
 
 # Scraping relevant parameters with a for loop
 for x in range(len(containers)): 
     descs = get_descs(containers[x])
     prices = get_prices(containers[x])
     urls = get_urls(containers[x])
+    pics = get_imgs(containers[x])
+    for item in range(len(containers)):
+        # Writing descriptions
+        worksheet.write(item+1, 0, descs)
+        # Writing prices
+        worksheet.write(item+1, 1, prices)
+        # Writing URLs
+        worksheet.write(item+1, 2, urls)
+        # Writing images
+        worksheet.write(item+1, 3, f)
 
 
 # Creating csv file to store scraped content
-csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
-csv_writer = csv.writer(csv_file)
-csv_writer.writerow(["Description", "Price", "URL"])
+# csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
+# csv_writer = csv.writer(csv_file)
+# csv_writer.writerow(["Description", "Price", "URL"])
 
     # # Scraping descriptions 
     # descs = containers[x].find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _30RANjWDIv"}).text
@@ -98,10 +118,13 @@ csv_writer.writerow(["Description", "Price", "URL"])
     #         pic = f.write(requests.get(image_src).content)
     # CSV's can't store images, lol....
     # csv_writer.writerow([descs, prices, urls])
-
-
-
 # csv_file.close()
+
+
+
+
+
+    
 
 # Building the while loop to compile the data with
 # while True:
