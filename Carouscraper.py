@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import csv
 from os.path import basename
+import os
 import time
 import glob
 import xlsxwriter
@@ -64,11 +65,11 @@ def get_imgs(inp):
     for img in img_links:
         image_src = img["src"]
         with open(basename(image_src), "wb") as f:
-            f.write(requests.get(image_src).content)
-    return print(f)
+            picture = f.write(requests.get(image_src).content)
+    return picture
 
 # Creating Excel File
-workbook = xlsxwriter.Workbook("carousell_scrape.xlsx")
+workbook = xlsxwriter.Workbook(os.path.join(os.path.dirname(os.path.abspath(__file__)), "scraped_data.xlsx"))
 worksheet = workbook.add_worksheet()
 # Writing headers
 worksheet.write("A1", "Description")
@@ -90,8 +91,10 @@ for x in range(len(containers)):
         # Writing URLs
         worksheet.write(item+1, 2, urls)
         # Writing images
-        worksheet.write(item+1, 3, f)
+        # worksheet.write(item+1, 3, pics)
+        # Struggling to call the images
 
+workbook.close()
 
 # Creating csv file to store scraped content
 # csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
