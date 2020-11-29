@@ -7,6 +7,9 @@ import os
 import time
 import glob
 import xlsxwriter
+import pandas as pd
+
+
 
 
 my_url = "https://www.carousell.sg/search/guitar?"
@@ -40,24 +43,29 @@ for price in price_result:
 
 '''
 
+# Creating lists for easy indexing
+desc_list = []
+price_list = []
+url_list = []
+pic_list = []
 
 
 # Function for scraping descriptions
 def get_descs(inp):
     descs = inp.find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _30RANjWDIv"}).text
-    return print(descs)
+    return descs
 
 # Function for scraping prices
 def get_prices(inp):
     prices = inp.find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _3k5LISAlf6"}).text
-    return print(prices)
+    return prices
 
 
 # Function for scraping URLs
 def get_urls(inp):
     links = [a["href"] for a in inp.find_all("a",href=True) if a.text]
     urls = "carousell.sg" + links[1]
-    return print(urls)
+    return urls 
 
 # Function for scraping images
 def get_imgs(inp):
@@ -66,7 +74,10 @@ def get_imgs(inp):
         image_src = img["src"]
         with open(basename(image_src), "wb") as f:
             picture = f.write(requests.get(image_src).content)
+            pic_list.append(basename(image_src))
     return picture
+
+############################################################################################################################
 
 # Creating Excel File
 workbook = xlsxwriter.Workbook(os.path.join(os.path.dirname(os.path.abspath(__file__)), "scraped_data.xlsx"))
@@ -80,32 +91,71 @@ worksheet.write("D1", "Image")
 # Scraping relevant parameters with a for loop
 for x in range(len(containers)): 
     descs = get_descs(containers[x])
+    desc_list.append(descs)
     prices = get_prices(containers[x])
+    price_list.append(prices)
     urls = get_urls(containers[x])
+    url_list.append(urls)
     pics = get_imgs(containers[x])
-    for item in range(len(containers)):
-        # Writing descriptions
-        worksheet.write(item+1, 0, descs)
-        # Writing prices
-        worksheet.write(item+1, 1, prices)
-        # Writing URLs
-        worksheet.write(item+1, 2, urls)
-        # Writing images
-        # worksheet.write(item+1, 3, pics)
-        # Struggling to call the images
+
+    # Writing descriptions
+    worksheet.write(x+1, 0, descs)
+    # Writing prices
+    worksheet.write(x+1, 1, prices)
+    # Writing URLs
+    worksheet.write(x+1, 2, urls)
+    # Writing images
+    # worksheet.write(x+1, 3, pics)
 
 workbook.close()
+
+# for x in range(len(containers)):
+#     str(desc_list[x])
+#     str(price_list[x])
+#     str(url_list[x])
+#     str(pic_list[x])
+#     print(desc_list[x].encode("utf-8"))
+#     print(price_list[x].encode("utf-8"))
+#     print(url_list[x].encode("utf-8"))
+#     print(pic_list[x].encode("utf-8"))
+
+
+# List comprehension
+desc_list_1 = [str(x) for x in desc_list]
+price_list_1 = [str(x) for x in price_list]
+url_list_1 = [str(x) for x in url_list]
+pic_list_1 = [str(x) for x in pic_list]
+
+
+# Creating pandas dataframe
+scraped_df = pd.DataFrame(desc_list)
+print(scraped_df)
+
+
+
+# working_dir = r"C:\Users\WeeKe\Desktop\Python Playground\Carousell Webscraper"
+# for file in os.listdir(working_dir):
+#     if file.endswith(".jpg"):
+#         pic_list.append(file)
+
+# print(desc_list[0], price_list[0], pic_list[0])
+
+
+
+#######################################################################################################################################################
 
 # Creating csv file to store scraped content
 # csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
 # csv_writer = csv.writer(csv_file)
 # csv_writer.writerow(["Description", "Price", "URL"])
 
+# for x in range(len(containers)):
+#     descs = containers[x].find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _30RANjWDIv"}).text
+#     print(descs.encode("utf-8"))
     # # Scraping descriptions 
     # descs = containers[x].find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _30RANjWDIv"}).text
     # print(descs)
-    # descs = get_descs(containers[x])
-    # # Scraping prices
+1    # # Scraping prices
     # prices = containers[x].find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _3k5LISAlf6"}).text
     # print(prices)
     # # Scraping links to the carousell listing
@@ -119,7 +169,6 @@ workbook.close()
     #     image_src = img["src"]
     #     with open(basename(image_src), "wb") as f:
     #         pic = f.write(requests.get(image_src).content)
-    # CSV's can't store images, lol....
     # csv_writer.writerow([descs, prices, urls])
 # csv_file.close()
 
@@ -171,3 +220,4 @@ workbook.close()
 
 # Conclude the project after I figure out how to present the images together with the other content 
 '''
+
