@@ -10,8 +10,6 @@ import xlsxwriter
 import pandas as pd
 
 
-
-
 my_url = "https://www.carousell.sg/search/guitar?"
 resp = requests.get(my_url)
 
@@ -121,24 +119,22 @@ workbook.close()
 
 
 # List comprehension
-desc_list_1 = [str(x) for x in desc_list]
-price_list_1 = [str(x) for x in price_list]
-url_list_1 = [str(x) for x in url_list]
-pic_list_1 = [str(x) for x in pic_list]
+desc_list = [x.encode("utf-8") for x in desc_list]
+price_list = [x.encode("utf-8") for x in price_list]
+url_list = [x.encode("utf-8") for x in url_list]
+pic_list = [x.encode("utf-8") for x in pic_list]
 
 
 # Creating pandas dataframe
-scraped_df = pd.DataFrame(desc_list)
+data = [desc_list, price_list, url_list]
+# scraped_df = pd.DataFrame(desc_list, price_list, url_list)
+scraped_df = pd.DataFrame(data)
+# scraped_df.columns = ["Description", "Price", "URL"]
 print(scraped_df)
 
-
-
-# working_dir = r"C:\Users\WeeKe\Desktop\Python Playground\Carousell Webscraper"
-# for file in os.listdir(working_dir):
-#     if file.endswith(".jpg"):
-#         pic_list.append(file)
-
-# print(desc_list[0], price_list[0], pic_list[0])
+# df = pd.read_excel("scraped_data.xlsx", encoding="iso-8859-1")
+# print(df)
+# Building script to open desired jpg file
 
 
 
@@ -155,7 +151,7 @@ print(scraped_df)
     # # Scraping descriptions 
     # descs = containers[x].find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _30RANjWDIv"}).text
     # print(descs)
-1    # # Scraping prices
+    # # Scraping prices
     # prices = containers[x].find("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _3k5LISAlf6"}).text
     # print(prices)
     # # Scraping links to the carousell listing
