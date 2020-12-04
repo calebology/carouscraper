@@ -9,6 +9,11 @@ import glob
 import xlsxwriter
 import pandas as pd
 
+# Creating lists for easy indexing
+desc_list = []
+price_list = []
+url_list = []
+pic_list = []
 
 my_url = "https://www.carousell.sg/search/guitar?"
 resp = requests.get(my_url)
@@ -18,35 +23,6 @@ my_soup = bs(resp.content, "html.parser")
 
 # Grabbing each listing
 containers = my_soup.findAll("div", {"class": "An6bc8d5sQ _9IlksbU0Mo _2t71A7rHgH"})
-
-'''
-## Testing on a single carousell listing
-
-# Scraping description from a single instance
-single = containers[0]
-desc_result = single.findAll(
-    "p",
-    attrs={
-        "class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _30RANjWDIv"
-    },
-)
-for desc in desc_result:
-    print(desc.text)
-
-
-# Scraping price from a single instance
-price_result = single.find_all("p", attrs = {"class": "_1gJzwc_bJS _2rwkILN6KA Rmplp6XJNu mT74Grr7MA nCFolhPlNA lqg5eVwdBz _19l6iUes6V _3k5LISAlf6"})
-for price in price_result:
-    print(price.text)
-
-'''
-
-# Creating lists for easy indexing
-desc_list = []
-price_list = []
-url_list = []
-pic_list = []
-
 
 # Function for scraping descriptions
 def get_descs(inp):
@@ -77,7 +53,7 @@ def get_imgs(inp):
 
 ############################################################################################################################
 
-# Creating Excel File
+# Creating Excel File #
 workbook = xlsxwriter.Workbook(os.path.join(os.path.dirname(os.path.abspath(__file__)), "scraped_data.xlsx"))
 worksheet = workbook.add_worksheet()
 # Writing headers
@@ -132,13 +108,13 @@ scraped_df = pd.DataFrame(data)
 # scraped_df.columns = ["Description", "Price", "URL"]
 print(scraped_df)
 
-# df = pd.read_excel("scraped_data.xlsx", encoding="iso-8859-1")
-# print(df)
+
+
 # Building script to open desired jpg file
 
 
 
-#######################################################################################################################################################
+####################################   DEPRECATED VERSION   ###################################################################################################################
 
 # Creating csv file to store scraped content
 # csv_file = open("carousell_scrape.csv", "w", encoding = "UTF-8")
@@ -168,11 +144,6 @@ print(scraped_df)
     # csv_writer.writerow([descs, prices, urls])
 # csv_file.close()
 
-
-
-
-
-    
 
 # Building the while loop to compile the data with
 # while True:
