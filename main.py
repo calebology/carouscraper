@@ -8,7 +8,7 @@ import time
 import glob
 import xlsxwriter
 import pandas as pd
-
+from selenium import webdriver
 # Creating lists for easy indexing
 desc_list = []
 price_list = []
@@ -17,6 +17,11 @@ pic_list = []
 
 my_url = "https://www.carousell.sg/search/guitar?"
 resp = requests.get(my_url)
+
+# Initializing webdriver
+PATH = "C:\Program Files (x86)\chromedriver.exe"
+driver = webdriver.Chrome(PATH)
+driver.get(my_url)
 
 # HTML Parsing
 my_soup = bs(resp.content, "html.parser")
@@ -62,24 +67,65 @@ worksheet.write("B1", "Price")
 worksheet.write("C1", "URL")
 worksheet.write("D1", "Image")
 
-# Scraping relevant parameters with a for loop
-for x in range(len(containers)): 
-    descs = get_descs(containers[x])
-    desc_list.append(descs)
-    prices = get_prices(containers[x])
-    price_list.append(prices)
-    urls = get_urls(containers[x])
-    url_list.append(urls)
-    pics = get_imgs(containers[x])
+x = 0
 
-    # Writing descriptions
-    worksheet.write(x+1, 0, descs)
-    # Writing prices
-    worksheet.write(x+1, 1, prices)
-    # Writing URLs
-    worksheet.write(x+1, 2, urls)
-    # Writing images
-    # worksheet.write(x+1, 3, pics)
+while x < 5:
+    containers = my_soup.findAll("div", {"class": "An6bc8d5sQ _9IlksbU0Mo _2t71A7rHgH"})
+    # Clicking the load more button
+    
+    for x in range(len(containers)): 
+        descs = get_descs(containers[x])
+        desc_list.append(descs)
+        prices = get_prices(containers[x])
+        price_list.append(prices)
+        urls = get_urls(containers[x])
+        url_list.append(urls)
+        # pics = get_imgs(containers[x])
+
+        # Writing descriptions
+        worksheet.write(x+1, 0, descs)
+        # Writing prices
+        worksheet.write(x+1, 1, prices)
+        # Writing URLs
+        worksheet.write(x+1, 2, urls)
+        # Writing images
+        # worksheet.write(x+1, 3, pics)
+    # Clicking "Load More" button
+    button = driver.find_element_by_xpath('//*[@id="root"]/div/div[3]/div/div[2]/main/div/button')
+    button.click()
+    x += 1
+    time.sleep(10)
+
+
+
+
+
+# Scraping relevant parameters with a for loop
+# for x in range(len(containers): 
+#     descs = get_descs(containers[x])
+#     desc_list.append(descs)
+#     prices = get_prices(containers[x])
+#     price_list.append(prices)
+#     urls = get_urls(containers[x])
+#     url_list.append(urls)
+#     # pics = get_imgs(containers[x])
+
+#     # Writing descriptions
+#     worksheet.write(x+1, 0, descs)
+#     # Writing prices
+#     worksheet.write(x+1, 1, prices)
+#     # Writing URLs
+#     worksheet.write(x+1, 2, urls)
+#     # Writing images
+#     # worksheet.write(x+1, 3, pics)
+    
+#     # Clicking the load more button
+#     button = driver.find_element_by_xpath('//*[@id="root"]/div/div[3]/div/div[2]/main/div/button')
+#     button.click()
+
+#     time.sleep(10)
+
+print(len(desc_list))
 
 workbook.close()
 
